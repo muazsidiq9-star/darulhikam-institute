@@ -122,6 +122,105 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   // =========================
+  // TESTIMONIAL CAROUSEL
+  // =========================
+
+  const testimonialTrack = document.querySelector(".testimonial-track");
+
+  if (testimonialTrack) {
+
+    const slides   = Array.from(testimonialTrack.children);
+    const prevBtn  = document.querySelector(".carousel-btn.prev");
+    const nextBtn  = document.querySelector(".carousel-btn.next");
+    const dotsWrap = document.getElementById("testimonialDots");
+
+    let current = 0;
+    let autoplayTimer = null;
+
+    // Build the dot indicators
+    if (dotsWrap) {
+      slides.forEach((_, i) => {
+        const dot = document.createElement("button");
+        dot.className = "carousel-dot" + (i === 0 ? " active" : "");
+        dot.setAttribute("aria-label", `Go to testimonial ${i + 1}`);
+        dot.addEventListener("click", () => {
+          goToSlide(i);
+          startAutoplay();
+        });
+        dotsWrap.appendChild(dot);
+      });
+    }
+
+    const dots = dotsWrap ? Array.from(dotsWrap.children) : [];
+
+    function goToSlide(index) {
+      current = (index + slides.length) % slides.length;
+      testimonialTrack.style.transform = `translateX(-${current * 100}%)`;
+
+      dots.forEach((dot, i) => dot.classList.toggle("active", i === current));
+
+      // Pause any video that isn't on the active slide
+      slides.forEach((slide, i) => {
+        const video = slide.querySelector("video");
+        if (video && i !== current) video.pause();
+      });
+    }
+
+    function nextSlide() { goToSlide(current + 1); }
+    function prevSlide() { goToSlide(current - 1); }
+
+    function startAutoplay() {
+      stopAutoplay();
+      autoplayTimer = setInterval(nextSlide, 6000);
+    }
+
+    function stopAutoplay() {
+      if (autoplayTimer) clearInterval(autoplayTimer);
+    }
+
+    if (nextBtn) {
+      nextBtn.addEventListener("click", () => { nextSlide(); startAutoplay(); });
+    }
+
+    if (prevBtn) {
+      prevBtn.addEventListener("click", () => { prevSlide(); startAutoplay(); });
+    }
+
+    // Don't fight the visitor — pause autoplay while a testimonial video plays
+    slides.forEach(slide => {
+      const video = slide.querySelector("video");
+      if (!video) return;
+      video.addEventListener("play", stopAutoplay);
+      video.addEventListener("pause", startAutoplay);
+      video.addEventListener("ended", startAutoplay);
+    });
+
+    // Swipe support for touch devices
+    let touchStartX = 0;
+
+    testimonialTrack.addEventListener("touchstart", (e) => {
+      touchStartX = e.touches[0].clientX;
+      stopAutoplay();
+    });
+
+    testimonialTrack.addEventListener("touchend", (e) => {
+      const touchEndX = e.changedTouches[0].clientX;
+      const diff = touchStartX - touchEndX;
+
+      if (Math.abs(diff) > 40) {
+        diff > 0 ? nextSlide() : prevSlide();
+      }
+
+      startAutoplay();
+    });
+
+    goToSlide(0);
+    startAutoplay();
+
+  }
+
+
+  // =========================
   // AUTO YEAR
   // =========================
 
