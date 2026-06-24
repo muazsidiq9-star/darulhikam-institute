@@ -632,7 +632,7 @@ Passport:        ${passport_url}
         // SAVE TO LOCALSTORAGE
         localStorage.setItem("studentCountry", country);
 
-        localStorage.setItem("alBayanUser", JSON.stringify({
+        localStorage.setItem("darulHikamUser", JSON.stringify({
           matric_number: data.matric_number,
           fullname:      fullName,
           email:         email,
@@ -675,7 +675,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (!paymentForm) return;
 
   // LOAD USER DATA FROM LOCALSTORAGE
-  const savedUser = JSON.parse(localStorage.getItem("alBayanUser"));
+  const savedUser = JSON.parse(localStorage.getItem("darulHikamUser"));
 
   const planWrapper = document.getElementById("planTypeWrapper");
   const planField   = document.getElementById("plan_type");

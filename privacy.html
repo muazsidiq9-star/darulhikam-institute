@@ -149,7 +149,9 @@
   <footer class="footer">
     <div class="footer-inner">
 
-      <p>© <span id="year"></span> Dar Al-Ulum Arabic Institute. All rights reserved.</p>
+      <div class="footer-bottom">
+      <small id="footerYear"></small>
+    </div>
 
       <div class="footer-links">
         <a href="index.html">Home</a>
@@ -162,7 +164,7 @@
 
   <!-- JS -->
   <script>
-    document.getElementById("year").textContent = new Date().getFullYear();
+    document.getElementById("footerYear").textContent = `© 2026 - ${new Date().getFullYear()} Dar Al-Ulum Arabic Institute. All rights reserved.`;
 
     const toggle = document.getElementById("themeToggle");
     toggle.addEventListener("click", () => {
