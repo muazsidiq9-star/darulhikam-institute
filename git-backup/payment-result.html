@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Payment Result | Dar Al-Ulum Arabic Institute</title>
+
+  <link rel="stylesheet" href="payment.css" />
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+</head>
+<body>
+
+  <!--
+    This page reuses the existing .payment-success-modal / .payment-success-content
+    classes from payment.css (the same ones used for the inline confirmation popup),
+    just displayed as a standalone full page instead of an overlay — so it looks
+    identical to what students already see, with its own shareable URL.
+
+    Expected query params (all optional except status):
+      ?status=success|failed
+      &amount=12000
+      &currency=NGN
+      &tx=daralulum-DUH26003-172000000
+      &reason=Payment%20could%20not%20be%20verified (only for failed)
+  -->
+
+  <div class="payment-success-modal show" id="resultModal">
+    <div class="payment-success-content">
+
+      <div class="success-icon" id="resultIcon">✔</div>
+
+      <h2 id="resultTitle">Payment Verified 🎉</h2>
+
+      <p id="resultMessage">
+        Your enrollment is now confirmed. Welcome to Dar Al-Ulum!
+      </p>
+
+      <p id="resultTxRef" style="font-size:0.75rem; color:var(--muted); margin-top:-6px; word-break:break-all;"></p>
+
+      <div style="display:flex; gap:10px; justify-content:center; margin-top:6px; flex-wrap:wrap;">
+        <a href="index.html" class="success-close-btn" style="text-decoration:none; display:inline-block;">
+          Back to Home
+        </a>
+        <a href="payment.html" id="retryLink" class="success-close-btn"
+           style="text-decoration:none; display:none; background:transparent; border:1px solid var(--border-mid); color:var(--text);">
+          Try Again
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const status   = params.get("status");
+    const amount   = params.get("amount");
+    const currency = params.get("currency");
+    const tx       = params.get("tx");
+    const reason   = params.get("reason");
+
+    const icon    = document.getElementById("resultIcon");
+    const title   = document.getElementById("resultTitle");
+    const message = document.getElementById("resultMessage");
+    const txRefEl = document.getElementById("resultTxRef");
+    const retryLink = document.getElementById("retryLink");
+
+    if (status === "failed") {
+      icon.textContent = "✕";
+      icon.style.color = "#dc2626";
+      icon.style.background = "rgba(220,38,38,0.10)";
+      icon.style.borderColor = "rgba(220,38,38,0.30)";
+
+      title.textContent = "Payment Not Confirmed";
+      message.textContent = reason
+        ? decodeURIComponent(reason)
+        : "We could not confirm this payment. If an amount was deducted from your account, please contact support with your transaction reference below.";
+
+      retryLink.style.display = "inline-block";
+
+    } else if (status === "success") {
+      title.textContent = "Payment Verified 🎉";
+
+      if (amount && currency) {
+        message.textContent = `Your payment of ${currency} ${Number(amount).toLocaleString()} has been confirmed. Your enrollment is now active. Welcome to Dar Al-Ulum!`;
+      } else {
+        message.textContent = "Your enrollment is now confirmed. Welcome to Dar Al-Ulum!";
+      }
+
+    } else {
+      // No valid status param at all (e.g. someone navigated here directly,
+      // bookmarked the page, or a param got dropped). Never assume success —
+      // show a neutral state instead.
+      icon.textContent = "?";
+      icon.style.color = "var(--muted)";
+      icon.style.background = "var(--card-hover)";
+      icon.style.borderColor = "var(--border-mid)";
+
+      title.textContent = "Payment Status Unavailable";
+      message.textContent = "We couldn't determine your payment status from this link. Please check your dashboard, or contact support with any transaction reference you have.";
+
+      retryLink.style.display = "inline-block";
+    }
+
+    if (tx) {
+      txRefEl.textContent = `Reference: ${tx}`;
+    }
+  </script>
+
+</body>
+</html>

@@ -141,7 +141,7 @@
 
         <h3>
           LIMITED-TIME PRICE:
-          <span>₦10,000/month</span>
+          <span>₦12,000/month</span>
         </h3>
 
         <button class="buy-btn openClassModal">
@@ -149,7 +149,7 @@
         </button>
 
         <p class="secure-payment-text">
-          Secure checkout powered by Selar • Supports cards & international payments
+          Secure checkout powered by Flutterwave • Supports cards & international payments
         </p>
 
       </div>
@@ -267,7 +267,7 @@
 
         <h3>
           LIMITED-PREMIUM ACCESS:
-          <span>₦50,000/month</span>
+          <span>₦35,000/month</span>
         </h3>
 
         <button class="buy-btn openClassModal">
@@ -275,7 +275,7 @@
         </button>
 
         <p class="secure-payment-text">
-          Secure checkout powered by Selar • Supports cards & international payments
+          Secure checkout powered by Flutterwave • Supports cards & international payments
         </p>
 
       </div>
@@ -355,12 +355,12 @@
           <span>$50/month</span>
         </h3>
 
-        <a href="https://selar.com/Dar Al-Ulum-institute" target="_blank" class="buy-btn">
+        <button type="button" class="buy-btn flutterwave-directbuy" data-plan="international" data-amount="50" data-currency="USD">
           ENROLL NOW
-        </a>
+        </button>
 
         <p class="secure-payment-text">
-          Secure checkout powered by Selar • Supports international payments
+          Secure checkout powered by Flutterwave • Supports international payments
         </p>
 
       </div>
@@ -392,7 +392,7 @@
       🇳🇬 Nigerian Students
     </span>
 
-    <!-- Polaris -->
+    <!-- Sterling -->
     <div class="payment-card">
 
       <div class="payment-card-header">
@@ -1111,32 +1111,32 @@ onclick="closePaymentModal('internationalPaymentModal')">
     <div class="class-options">
 
       <!-- GENERAL -->
-      <a href="https://selar.com/Dar Al-Ulum-institute"
-         target="_blank"
-         class="class-option">
+      <button type="button"
+         class="class-option flutterwave-option"
+         data-plan="general" data-amount="12000" data-currency="NGN">
 
         <h3>General Class</h3>
-        <h3>₦10,000</h3>
+        <h3>₦12,000</h3>
 
         <span>
           Structured group learning with other students.
         </span>
 
-      </a>
+      </button>
 
       <!-- PRIVATE -->
-      <a href="https://selar.com/098754354"
-         target="_blank"
-         class="class-option">
+      <button type="button"
+         class="class-option flutterwave-option"
+         data-plan="private" data-amount="35000" data-currency="NGN">
 
         <h3>Private Class</h3>
-        <h3>₦50,000</h3>
+        <h3>₦35,000</h3>
 
         <span>
           One-on-one personalized Arabic learning experience.
         </span>
 
-      </a>
+      </button>
 
     </div>
 
@@ -1168,6 +1168,8 @@ onclick="closePaymentModal('internationalPaymentModal')">
   <a href="#payments">Payment</a>
   <a href="mailto:support@darululum.com">Support</a>
   <a href="privacy.html">Privacy Policy</a>
+  <a href="refund-policy.html">Refund Policy</a>
+  <a href="terms.html">Terms & Conditions</a>
 </div>
 
 <div class="footer-contact">
@@ -1179,7 +1181,7 @@ onclick="closePaymentModal('internationalPaymentModal')">
   <p>
     WhatsApp:
     <a href="https://wa.me/2348110705054" target="_blank">
-      +234 705 471 1066
+      +234 811 070 5054
     </a>
   </p>
 </div>
@@ -1349,6 +1351,7 @@ if(savedCountry){
 }
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://checkout.flutterwave.com/v3.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

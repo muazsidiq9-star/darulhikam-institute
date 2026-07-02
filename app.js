@@ -711,6 +711,146 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
   // =========================
+  // SHARED SUCCESS POPUP (used by both the manual receipt form
+  // below AND the Flutterwave flow, so the confirmation experience
+  // matches regardless of how the student paid)
+  // =========================
+  function showPaymentSuccessModal(title, message) {
+    const successBox = document.createElement("div");
+    successBox.className = "payment-success-modal";
+    successBox.innerHTML = `
+      <div class="payment-success-content">
+        <div class="success-icon">✔</div>
+        <h2>${title}</h2>
+        <p>${message}</p>
+        <button class="success-close-btn">Continue</button>
+      </div>
+    `;
+
+    document.body.appendChild(successBox);
+    setTimeout(() => successBox.classList.add("show"), 100);
+
+    successBox.querySelector(".success-close-btn").addEventListener("click", () => {
+      successBox.classList.remove("show");
+      setTimeout(() => successBox.remove(), 300);
+    });
+  }
+
+
+  // =========================
+  // FLUTTERWAVE — replaces the old Selar redirect buttons
+  // (class-selection modal's two options + the international
+  // "ENROLL NOW" button). Same verification pattern as the main
+  // registration site: inline checkout with a fixed amount/currency
+  // per plan, then server-side verification via the same Edge
+  // Function, never trusting the client-side callback alone.
+  // =========================
+
+  const FLUTTERWAVE_PUBLIC_KEY   = "FLWPUBK-34b2c1c3c94fc67ab94089b5ec2f28a8-X";
+  const VERIFY_PAYMENT_ENDPOINT  = "https://ymxuwahcogzbbohdbpgg.supabase.co/functions/v1/verify-flutterwave-payment";
+
+  const classModalEl = document.getElementById("classModal");
+
+  function launchFlutterwaveCheckout(button) {
+    if (!savedUser || !savedUser.email) {
+      alert("We couldn't find your registration details. Please register first.");
+      return;
+    }
+
+    if (typeof FlutterwaveCheckout !== "function") {
+      alert("Payment system failed to load. Please refresh and try again.");
+      return;
+    }
+
+    const amount   = Number(button.dataset.amount);
+    const currency = button.dataset.currency;
+    const plan     = button.dataset.plan;
+
+    const originalText = button.textContent;
+    button.disabled = true;
+    button.textContent = "Opening secure checkout…";
+
+    const txRef = `daralulum-${savedUser.matric_number || "nomatric"}-${Date.now()}`;
+
+    FlutterwaveCheckout({
+      public_key: FLUTTERWAVE_PUBLIC_KEY,
+      tx_ref: txRef,
+      amount: amount,
+      currency: currency,
+      payment_options: "card, banktransfer, ussd",
+      customer: {
+        email: savedUser.email,
+        name: savedUser.fullname || ""
+      },
+      customizations: {
+        title: "Dar Al-Ulum Arabic Institute",
+        description: `${plan} Class Enrollment Payment`,
+        logo: "logo.png"
+      },
+      callback: async (response) => {
+        // Never trust this client-side response alone — always verify server-side.
+        button.textContent = "Verifying payment… ⏳";
+
+        try {
+          const res = await fetch(VERIFY_PAYMENT_ENDPOINT, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              transaction_id: response.transaction_id,
+              tx_ref: txRef,
+              matric_number: savedUser.matric_number || null,
+              payer_name: savedUser.fullname || "",
+              payer_email: savedUser.email,
+              expected_amount: amount,
+              expected_currency: currency,
+              plan_type: plan,
+              country: savedUser.country || null
+            })
+          });
+
+          const result = await res.json();
+
+          if (!res.ok || !result.success) {
+            throw new Error(result.message || "Payment verification failed.");
+          }
+
+          // Redirect to the dedicated result page only after OUR OWN
+          // server-side verification has already succeeded — same security
+          // model as before, just a nicer landing screen than the inline modal.
+          const successParams = new URLSearchParams({
+            status: "success",
+            amount: amount,
+            currency: currency,
+            tx: txRef
+          });
+          window.location.href = `payment-result.html?${successParams.toString()}`;
+
+        } catch (err) {
+          console.error("Payment verification error:", err);
+          const failParams = new URLSearchParams({
+            status: "failed",
+            tx: txRef,
+            reason: err.message || "Payment verification failed."
+          });
+          window.location.href = `payment-result.html?${failParams.toString()}`;
+        } finally {
+          button.disabled = false;
+          button.textContent = originalText;
+        }
+      },
+      onclose: () => {
+        button.disabled = false;
+        button.textContent = originalText;
+      }
+    });
+  }
+
+  document.querySelectorAll(".flutterwave-option, .flutterwave-directbuy").forEach(button => {
+    button.addEventListener("click", () => launchFlutterwaveCheckout(button));
+  });
+
+
+  // =========================
   // PAYMENT FORM SUBMIT
   // =========================
 
@@ -804,25 +944,10 @@ Receipt:        ${receipt_url}
       });
 
       // SHOW SUCCESS POPUP
-      const successBox = document.createElement("div");
-      successBox.className = "payment-success-modal";
-      successBox.innerHTML = `
-        <div class="payment-success-content">
-          <div class="success-icon">✔</div>
-          <h2>Payment Submitted</h2>
-          <p>Your payment proof was uploaded successfully. Our team will verify it shortly.</p>
-          <button class="success-close-btn">Continue</button>
-        </div>
-      `;
-
-      document.body.appendChild(successBox);
-
-      setTimeout(() => successBox.classList.add("show"), 100);
-
-      successBox.querySelector(".success-close-btn").addEventListener("click", () => {
-        successBox.classList.remove("show");
-        setTimeout(() => successBox.remove(), 300);
-      });
+      showPaymentSuccessModal(
+        "Payment Submitted",
+        "Your payment proof was uploaded successfully. Our team will verify it shortly."
+      );
 
       submitBtn.textContent = "Submitted ✔";
 

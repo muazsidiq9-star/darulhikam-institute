@@ -1279,10 +1279,14 @@ body.light-mode select option   { background-color:#fff; color:#1a2420; }
 
 .class-option {
   display:       block;
+  width:         100%;
   padding:       18px;
   border-radius: var(--radius);
   background:    var(--card);
   border:        1px solid var(--border);
+  font-family:   inherit;
+  text-align:    left;
+  cursor:        pointer;
   transition:    0.3s ease;
 }
 
@@ -1291,6 +1295,7 @@ body.light-mode select option   { background-color:#fff; color:#1a2420; }
   border-color: var(--border-strong);
   background:   var(--accent-subtle);
   box-shadow:   var(--shadow-sm);
+  color:        var(--accent);
 }
 
 .class-option h3 {
