@@ -803,6 +803,14 @@ body.light-mode .schedule-item span   { color: #4b5563; }
   cursor:     pointer;
 }
 
+.passport-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+  text-align: left;
+  margin-top: 4px;
+  margin-bottom: -4px; /* pulls it snug against the input below */
+}
 
 /* ============================================================
    15. SELECT DROPDOWN — global fix

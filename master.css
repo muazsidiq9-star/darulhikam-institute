@@ -1738,6 +1738,14 @@ body.light-mode select option {
   .modal-content { padding: 24px; border-radius: 18px; }
 }
 
+.passport-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-top: 4px;
+  margin-bottom: -4px; /* pulls it snug against the input below */
+}
+
 /* =========================
    MODAL PROGRAM PICKER
 ========================= */
