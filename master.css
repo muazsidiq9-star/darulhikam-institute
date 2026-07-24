@@ -2306,4 +2306,5 @@ select option { font-size: 1rem; }
   .story-box p  { font-size: 1.15rem; }
   .hero-title   { font-size: clamp(2.4rem, 8vw, 3.5rem); }
   .section-title { font-size: clamp(1.9rem, 5vw, 2.6rem); }
+  .testimonial-card p { font-size: 0.9rem; }
 }
